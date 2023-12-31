@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        *{
+            text-align: center;
+        }
+
+        .title{
+            margin-top: 70px;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- HTML -->
+    <div class="container">
+        <div class="row title">
+            <div class="col-sm-12 mt-4">
+                <h1>My ChatBot</h1>
+            </div>
+        </div>
+        <div id="log-container" class="row justify-content-center mt-3"></div>
+        <div class="row justify-content-center mt-4">
+            <div class="col-sm-6">
+                <form id="form" class="p-3 border rounded">
+                    <div class="form-group">
+                        <label for="text" class="sr-only">Input:</label>
+                        <input type="text" id="text" class="form-control" autofocus placeholder="Enter text...">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br>
+    <script>
+        const log = (text, color) => {
+          const logContainer = document.getElementById('log-container');
+          
+          // Create an alert div with Bootstrap classes
+          const alertDiv = document.createElement('div');
+          alertDiv.className = `alert alert-${color} alert-dismissible fade show`;
+          alertDiv.setAttribute('role', 'alert');
+          alertDiv.innerHTML = `
+            <span style="color: black;">${text}</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          `;
+      
+          // Append the alert to the log container
+          logContainer.appendChild(alertDiv);
+        };
+      
+        const socket = new WebSocket('ws://' + location.host + '/echo');
+        socket.addEventListener('message', ev => {
+          log( ev.data, 'primary'); // Use 'primary' for blue color in Bootstrap
+        });
+      
+        document.getElementById('form').onsubmit = ev => {
+          ev.preventDefault();
+          const textField = document.getElementById('text');
+          log(textField.value, 'info'); // Use 'danger' for red color in Bootstrap
+          socket.send(textField.value);
+          textField.value = '';
+        };
+      </script>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
